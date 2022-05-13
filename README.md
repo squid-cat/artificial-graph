@@ -1,6 +1,12 @@
-## 時間計測
-環境構築：
-開発：
+## 環境
+- React / Next.js
+- ESLint
+- Prettier
+- husky
+
+## 開発時間
+環境構築：  
+開発：  
 
 ---
 
