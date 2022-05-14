@@ -3,6 +3,8 @@ import axios from 'axios'
 import type { NextPage } from 'next'
 import { useEffect, useState } from 'react'
 import DefaultLayout from 'components/templates/DefaultLayout'
+import Checkbox from 'components/atoms/Checkbox'
+import styles from '../styles/Home.module.css'
 
 const Home: NextPage = () => {
   const [prefList, setPrefList] = useState<IPref[]>()
@@ -42,6 +44,9 @@ const Home: NextPage = () => {
 
   return (
     <DefaultLayout>
+      <div>
+        <Checkbox id={1} text={'テスト'} />
+      </div>
       {/* <div>
         {prefList?.map((pref) => {
           return <div>{pref.prefName}</div>
