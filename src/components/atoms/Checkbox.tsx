@@ -1,3 +1,4 @@
+import { css } from '@emotion/css'
 import { FC } from 'react'
 
 type Props = {
@@ -5,14 +6,16 @@ type Props = {
   text?: string
 }
 
+const CheckboxStyle = css({
+  margin: '0 10px',
+})
+
 const Checkbox: FC<Props> = (props) => {
   return (
-    <div>
-      <label>
-        <input type='checkbox' id={props.id.toString()} name={props.id.toString()} />
-        <div>{props.text}</div>
-      </label>
-    </div>
+    <label className={CheckboxStyle}>
+      <input type='checkbox' value={props.id.toString()} name={props.id.toString()} />
+      {props.text}
+    </label>
   )
 }
 

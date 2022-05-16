@@ -1,14 +1,16 @@
-import { IGetPrefArtificialList, IGetPrefList, IPref } from 'types'
+import { IGetPrefArtificialList, IGetPrefList, IGraphData, IPref } from 'types'
 import axios from 'axios'
 import type { NextPage } from 'next'
 import { useEffect, useState } from 'react'
 import DefaultLayout from 'components/templates/DefaultLayout'
-import Checkbox from 'components/atoms/Checkbox'
-import styles from '../styles/Home.module.css'
+import CheckboxList from 'components/molecules/CheckboxList'
+import PrefectureChart from 'components/organisms/PrefectureChart'
+import { css } from '@emotion/css'
 
 const Home: NextPage = () => {
-  const [prefList, setPrefList] = useState<IPref[]>()
-  const [prefArtificialList, setPrefArtificialList] = useState<IPref[]>()
+  const [prefList, setPrefList] = useState<IPref[]>([])
+  const [selectedPrefList, setSelectedPrefList] = useState<IPref[]>([])
+  const [graphDataList, setGraphDataList] = useState<IGraphData>([])
 
   // 都道府県一覧の取得
   useEffect(() => {
@@ -27,9 +29,20 @@ const Home: NextPage = () => {
   }, [])
 
   useEffect(() => {
+    /* const testInput: IGraphData = [
+      { prefId: 1, prefName: '北海道', year: 2000, value: 25000 },
+      { prefId: 1, prefName: '北海道', year: 2005, value: 24000 },
+      { prefId: 1, prefName: '北海道', year: 2010, value: 22000 },
+      { prefId: 1, prefName: '北海道', year: 2015, value: 20000 },
+      { prefId: 2, prefName: '青森県', year: 2000, value: 21000 },
+      { prefId: 2, prefName: '青森県', year: 2005, value: 25000 },
+      { prefId: 2, prefName: '青森県', year: 2010, value: 22000 },
+      { prefId: 2, prefName: '青森県', year: 2015, value: 28000 },
+    ] */
+    const prefId = 1
     axios
       .get<IGetPrefArtificialList>(
-        'https://opendata.resas-portal.go.jp/api/v1/population/composition/perYear?prefCode=1',
+        `https://opendata.resas-portal.go.jp/api/v1/population/composition/perYear?prefCode=${prefId}`,
         {
           headers: {
             'X-API-KEY': process.env.NEXT_PUBLIC_RESAS_APIKEY
@@ -38,52 +51,36 @@ const Home: NextPage = () => {
           },
         },
       )
-      .then((res) => {})
+      .then((res) => {
+        const newGraphData: IGraphData = []
+        res.data.result.data[0].data.forEach((item) => {
+          newGraphData.push({
+            prefId: prefId,
+            prefName: prefList?.find((pd) => pd.prefCode === prefId)?.prefName || '',
+            year: item.year,
+            value: item.value,
+          })
+        })
+        setGraphDataList(newGraphData)
+        if (prefList[0]) {
+          setSelectedPrefList([prefList[0]])
+        }
+      })
       .catch((err) => {})
-  }, [])
+  }, [prefList])
 
   return (
     <DefaultLayout>
-      <div>
-        <Checkbox id={1} text={'テスト'} />
+      <CheckboxList
+        data={
+          prefList?.map((pref) => {
+            return { id: pref.prefCode, text: pref.prefName ? pref.prefName : '' }
+          }) || []
+        }
+      />
+      <div className={css({ marginTop: '20px' })}>
+        <PrefectureChart selectedPrefList={selectedPrefList} prefectureData={graphDataList} />
       </div>
-      {/* <div>
-        {prefList?.map((pref) => {
-          return <div>{pref.prefName}</div>
-        })}
-      </div> */}
-      {/* <h1 className={styles.title}>
-        Welcome to <a href='https://nextjs.org'>Next.js!</a>
-      </h1>
-
-      <p className={styles.description}>
-        Get started by editing <code className={styles.code}>pages/index.tsx</code>
-      </p>
-
-      <div className={styles.grid}>
-        <a href='https://nextjs.org/docs' className={styles.card}>
-          <h2>Documentation &rarr;</h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a href='https://nextjs.org/learn' className={styles.card}>
-          <h2>Learn &rarr;</h2>
-          <p>Learn about Next.js in an interactive course with quizzes!</p>
-        </a>
-
-        <a href='https://github.com/vercel/next.js/tree/canary/examples' className={styles.card}>
-          <h2>Examples &rarr;</h2>
-          <p>Discover and deploy boilerplate example Next.js projects.</p>
-        </a>
-
-        <a
-          href='https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app'
-          className={styles.card}
-        >
-          <h2>Deploy &rarr;</h2>
-          <p>Instantly deploy your Next.js site to a public URL with Vercel.</p>
-        </a>
-      </div> */}
     </DefaultLayout>
   )
 }
