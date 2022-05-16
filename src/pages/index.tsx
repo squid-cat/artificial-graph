@@ -1,7 +1,7 @@
-import { IGetPrefArtificialList, IGetPrefList, IGraphData, IPref } from 'types'
+import { IDataFormat, IGetPrefArtificialList, IGetPrefList, IGraphData, IPref } from 'types'
 import axios from 'axios'
 import type { NextPage } from 'next'
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import DefaultLayout from 'components/templates/DefaultLayout'
 import CheckboxList from 'components/molecules/CheckboxList'
 import PrefectureChart from 'components/organisms/PrefectureChart'
@@ -11,6 +11,7 @@ const Home: NextPage = () => {
   const [prefList, setPrefList] = useState<IPref[]>([])
   const [selectedPrefList, setSelectedPrefList] = useState<IPref[]>([])
   const [graphDataList, setGraphDataList] = useState<IGraphData>([])
+  const [data, setData] = useState<Array<IDataFormat>>([])
 
   // 都道府県一覧の取得
   useEffect(() => {
@@ -29,17 +30,23 @@ const Home: NextPage = () => {
   }, [])
 
   useEffect(() => {
-    /* const testInput: IGraphData = [
-      { prefId: 1, prefName: '北海道', year: 2000, value: 25000 },
-      { prefId: 1, prefName: '北海道', year: 2005, value: 24000 },
-      { prefId: 1, prefName: '北海道', year: 2010, value: 22000 },
-      { prefId: 1, prefName: '北海道', year: 2015, value: 20000 },
-      { prefId: 2, prefName: '青森県', year: 2000, value: 21000 },
-      { prefId: 2, prefName: '青森県', year: 2005, value: 25000 },
-      { prefId: 2, prefName: '青森県', year: 2010, value: 22000 },
-      { prefId: 2, prefName: '青森県', year: 2015, value: 28000 },
-    ] */
-    const prefId = 1
+    const dataOutout: Array<IDataFormat> = []
+    graphDataList.forEach((item) => {
+      const searchYear = dataOutout.find((aIn) => aIn.year === item.year)
+      if (searchYear === undefined) {
+        dataOutout.push({ year: item.year })
+      }
+      const indexYear = dataOutout.findIndex((aIn) => aIn.year === item.year)
+      dataOutout[indexYear][item.prefId] = item.value
+    })
+    setData(dataOutout)
+  }, [graphDataList])
+
+  const getPrefData = (prefId: number) => {
+    // データが既にある場合はgetしない
+    if (graphDataList.findIndex((gd) => gd.prefId === prefId) !== -1) return
+
+    // 人口の取得
     axios
       .get<IGetPrefArtificialList>(
         `https://opendata.resas-portal.go.jp/api/v1/population/composition/perYear?prefCode=${prefId}`,
@@ -52,7 +59,7 @@ const Home: NextPage = () => {
         },
       )
       .then((res) => {
-        const newGraphData: IGraphData = []
+        const newGraphData: IGraphData = [...graphDataList]
         res.data.result.data[0].data.forEach((item) => {
           newGraphData.push({
             prefId: prefId,
@@ -62,12 +69,30 @@ const Home: NextPage = () => {
           })
         })
         setGraphDataList(newGraphData)
-        if (prefList[0]) {
-          setSelectedPrefList([prefList[0]])
-        }
       })
       .catch((err) => {})
-  }, [prefList])
+  }
+
+  const handleOnClick = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) {
+      getPrefData(Number(e.target.name))
+      const addPref: IPref | undefined = prefList.find(
+        (pd) => pd.prefCode.toString() === (e.target.name ? e.target.name : ''),
+      )
+      if (addPref) {
+        setSelectedPrefList([...selectedPrefList, addPref])
+      }
+    } else {
+      const nextPrefList = [...selectedPrefList]
+      const removeIndex = nextPrefList.findIndex(
+        (pd) => pd.prefCode.toString() === (e.target.name ? e.target.name : ''),
+      )
+      if (removeIndex !== -1) {
+        nextPrefList.splice(removeIndex, 1)
+      }
+      setSelectedPrefList(nextPrefList)
+    }
+  }
 
   return (
     <DefaultLayout>
@@ -77,9 +102,14 @@ const Home: NextPage = () => {
             return { id: pref.prefCode, text: pref.prefName ? pref.prefName : '' }
           }) || []
         }
+        onClick={handleOnClick}
       />
       <div className={css({ marginTop: '20px' })}>
-        <PrefectureChart selectedPrefList={selectedPrefList} prefectureData={graphDataList} />
+        <PrefectureChart
+          selectedPrefList={selectedPrefList}
+          prefectureData={graphDataList}
+          td={data}
+        />
       </div>
     </DefaultLayout>
   )

@@ -7,6 +7,7 @@ type Props = {
     id: number
     text?: string
   }[]
+  onClick: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
 const CheckboxListStyle = css({
@@ -20,7 +21,7 @@ const CheckboxList: FC<Props> = (props) => {
     <div>
       <div className={CheckboxListStyle}>
         {props.data.map((item, index) => {
-          return <Checkbox id={item.id} text={item.text} key={index} />
+          return <Checkbox id={item.id} text={item.text} key={index} onClick={props.onClick} />
         })}
       </div>
     </div>
