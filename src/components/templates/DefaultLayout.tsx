@@ -1,20 +1,22 @@
-import Head from 'next/head'
+import Header from 'components/organisms/Header'
 import React from 'react'
 import styles from '../../styles/Home.module.css'
 
 type Props = {
   children: React.ReactNode
+  title?: string
+  description?: string
+  iconHref?: string
 }
 
 const DefaultLayout: React.FC<Props> = (props) => {
   return (
     <div className={styles.container}>
-      <Head>
-        <title>総人口推移グラフページ</title>
-        <meta name='description' content='都道府県別の総人口推移グラフを表示' />
-        <link rel='icon' href='/favicon.ico' />
-      </Head>
-
+      <Header
+        title={props.title || ''}
+        description={props.description || ''}
+        iconHref={props.iconHref || './images/icon.png'}
+      />
       <main className={styles.main}>{props.children}</main>
     </div>
   )

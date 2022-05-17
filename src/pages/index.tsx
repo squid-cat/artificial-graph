@@ -97,7 +97,7 @@ const Home: NextPage = () => {
   }
 
   return (
-    <DefaultLayout>
+    <DefaultLayout title='総人口推移グラフページ' description='都道府県別の総人口推移グラフを表示'>
       <div>
         <CheckboxList
           data={
