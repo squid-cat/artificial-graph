@@ -7,16 +7,18 @@ type Props = {
     id: number
     text?: string
   }[]
+  width: string
   onClick: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
-const CheckboxListStyle = css({
-  display: 'flex',
-  justifyContent: 'center',
-  flexWrap: 'wrap',
-})
-
 const CheckboxList: FC<Props> = (props) => {
+  const CheckboxListStyle = css({
+    display: 'flex',
+    justifyContent: 'center',
+    flexWrap: 'wrap',
+    width: props.width,
+  })
+
   return (
     <div>
       <div className={CheckboxListStyle}>

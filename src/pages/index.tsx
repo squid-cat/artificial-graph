@@ -6,8 +6,10 @@ import DefaultLayout from 'components/templates/DefaultLayout'
 import CheckboxList from 'components/molecules/CheckboxList'
 import PrefectureChart from 'components/organisms/PrefectureChart'
 import { css } from '@emotion/css'
+import { useMediaQueryContext } from 'components/organisms/MediaQueryProvider'
 
 const Home: NextPage = () => {
+  const { isMobileSite, isTabletSite, isPcSite } = useMediaQueryContext()
   const [prefList, setPrefList] = useState<IPref[]>([])
   const [selectedPrefList, setSelectedPrefList] = useState<IPref[]>([])
   const [graphDataList, setGraphDataList] = useState<IGraphData>([])
@@ -96,19 +98,27 @@ const Home: NextPage = () => {
 
   return (
     <DefaultLayout>
-      <CheckboxList
-        data={
-          prefList?.map((pref) => {
-            return { id: pref.prefCode, text: pref.prefName ? pref.prefName : '' }
-          }) || []
-        }
-        onClick={handleOnClick}
-      />
-      <div className={css({ marginTop: '20px' })}>
+      <div>
+        <h2>表示する都道府県</h2>
+        <CheckboxList
+          data={
+            prefList?.map((pref) => {
+              return { id: pref.prefCode, text: pref.prefName ? pref.prefName : '' }
+            }) || []
+          }
+          onClick={handleOnClick}
+          width={isMobileSite ? '300px' : isTabletSite ? '520px' : '960px'}
+        />
+      </div>
+
+      <div className={css({ marginTop: '30px' })}>
+        <h2>総人口推移グラフ</h2>
         <PrefectureChart
           selectedPrefList={selectedPrefList}
           prefectureData={graphDataList}
           td={data}
+          width={isMobileSite ? 290 : isTabletSite ? 400 : 960}
+          height={isMobileSite ? 240 : isTabletSite ? 300 : 400}
         />
       </div>
     </DefaultLayout>

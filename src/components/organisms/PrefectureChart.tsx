@@ -6,13 +6,15 @@ type Props = {
   selectedPrefList: IPref[]
   prefectureData: IGraphData
   td?: Array<IDataFormat>
+  width: number
+  height: number
 }
 
 const PrefectureChart: FC<Props> = (props) => {
   return (
     <>
       {props.selectedPrefList.length !== 0 && props.td?.length !== 0 && (
-        <LineChart width={800} height={400} data={props.td}>
+        <LineChart width={props.width} height={props.height} data={props.td}>
           <XAxis dataKey='year' unit='年' />
           <YAxis />
           <Tooltip></Tooltip>
