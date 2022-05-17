@@ -3,10 +3,12 @@
 - ESLint
 - Prettier
 - husky
+- emotion
+- recharts
 
 ## 開発時間
-環境構築：  
-開発：  
+環境構築：約2時間
+開発：約1時間
 
 ---
 
