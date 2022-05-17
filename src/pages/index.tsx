@@ -99,7 +99,6 @@ const Home: NextPage = () => {
   return (
     <DefaultLayout>
       <div>
-        <h2>表示する都道府県</h2>
         <CheckboxList
           data={
             prefList?.map((pref) => {
@@ -112,7 +111,6 @@ const Home: NextPage = () => {
       </div>
 
       <div className={css({ marginTop: '30px' })}>
-        <h2>総人口推移グラフ</h2>
         <PrefectureChart
           selectedPrefList={selectedPrefList}
           prefectureData={graphDataList}

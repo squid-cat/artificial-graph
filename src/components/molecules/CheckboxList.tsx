@@ -1,6 +1,7 @@
 import Checkbox from 'components/atoms/Checkbox'
 import { FC } from 'react'
 import { css } from '@emotion/css'
+import SubTitle from 'components/atoms/SubTitle'
 
 type Props = {
   data: {
@@ -21,6 +22,7 @@ const CheckboxList: FC<Props> = (props) => {
 
   return (
     <div>
+      <SubTitle title='表示する都道府県' />
       <div className={CheckboxListStyle}>
         {props.data.map((item, index) => {
           return <Checkbox id={item.id} text={item.text} key={index} onClick={props.onClick} />
